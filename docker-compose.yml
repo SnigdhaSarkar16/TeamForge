@@ -1,4 +1,5 @@
 services:
+
   db:
     image: postgres:16
     container_name: teamforge-db
@@ -34,6 +35,17 @@ services:
       - "9090:9090"
     depends_on:
       - api
+
+  grafana:
+    image: grafana/grafana:11.3.1
+    container_name: teamforge-grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
 
 volumes:
   postgres_data:
