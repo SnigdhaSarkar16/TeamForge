@@ -1,0 +1,16 @@
+{
+  "students": 300,
+  "teams": 60,
+  "greedy_score": 50.46233333333333,
+  "optimized_score": 50.46233333333333,
+  "greedy_coverage": 0.9450555555555558,
+  "optimized_coverage": 0.9450555555555558,
+  "greedy_distribution": 0.6450555555555557,
+  "optimized_distribution": 0.6450555555555557,
+  "score_improvement_percent": 0.0,
+  "coverage_improvement_percent": 0.0,
+  "distribution_improvement_percent": 0.0,
+  "greedy_seconds": 0.23828270006924868,
+  "optimized_seconds": 0.2291882997378707,
+  "total_seconds": 0.46747099980711937
+}

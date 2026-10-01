@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TeamForge</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #1f2937;
+        }
+
+        header {
+            background: #111827;
+            color: white;
+            padding: 24px 40px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        header p {
+            margin: 6px 0 0;
+            color: #cbd5e1;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        section {
+            background: white;
+            border-radius: 10px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        input,
+        select,
+        button {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            font-size: 14px;
+        }
+
+        input[type="number"] {
+            width: 80px;
+        }
+
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        button.secondary {
+            background: #475569;
+        }
+
+        button.secondary:hover {
+            background: #334155;
+        }
+
+        .skill-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .message {
+            margin-left: 10px;
+            font-size: 14px;
+        }
+
+        .success {
+            color: #15803d;
+        }
+
+        .error {
+            color: #dc2626;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 18px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .stat-value {
+            font-size: 26px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .teams {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+
+        .team-card {
+            border: 1px solid #dbeafe;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .team-header {
+            background: #eff6ff;
+            padding: 16px;
+            border-bottom: 1px solid #dbeafe;
+        }
+
+        .team-header h3 {
+            margin: 0;
+        }
+
+        .team-body {
+            padding: 16px;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 7px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .metric:last-child {
+            border-bottom: none;
+        }
+
+        .member {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: #f8fafc;
+            border-radius: 6px;
+        }
+
+        .member-name {
+            font-weight: bold;
+        }
+
+        .member-role {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .skills {
+            margin-top: 5px;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .empty {
+            color: #64748b;
+            text-align: center;
+            padding: 30px;
+        }
+
+        @media (max-width: 600px) {
+            .teams {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>TeamForge</h1>
+    <p>Intelligent project and hackathon team formation</p>
+</header>
+
+<main>
+
+    <!-- STEP 1 -->
+    <section>
+        <h2>1. Create Hackathon / Project</h2>
+
+        <div class="form-row">
+
+            <div class="field">
+                <label for="hackathon-name">Name</label>
+                <input
+                    id="hackathon-name"
+                    type="text"
+                    placeholder="AI Innovation Hackathon"
+                >
+            </div>
+
+            <div class="field">
+                <label for="team-size">Team Size</label>
+                <input
+                    id="team-size"
+                    type="number"
+                    min="2"
+                    max="10"
+                    value="5"
+                >
+            </div>
+
+        </div>
+
+        <h3>Required Skill Levels</h3>
+
+        <div id="requirements" class="skill-grid"></div>
+
+        <button id="create-hackathon">
+            Create Hackathon
+        </button>
+
+        <span id="create-message" class="message"></span>
+    </section>
+
+
+    <!-- STEP 2 -->
+    <section>
+        <h2>2. Select Hackathon</h2>
+
+        <div class="form-row">
+
+            <div class="field">
+                <label for="hackathon-select">
+                    Hackathon
+                </label>
+
+                <select id="hackathon-select">
+                    <option value="">Select a hackathon</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Registered Students</label>
+                <input
+                    id="student-count"
+                    type="text"
+                    value="0"
+                    disabled
+                >
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- STEP 3 -->
+    <section>
+        <h2>3. Add Student</h2>
+
+        <div class="form-row">
+
+            <div class="field">
+                <label for="student-name">
+                    Name
+                </label>
+
+                <input
+                    id="student-name"
+                    type="text"
+                    placeholder="Student name"
+                >
+            </div>
+
+            <div class="field">
+                <label for="student-role">
+                    Preferred Role
+                </label>
+
+                <select id="student-role"></select>
+            </div>
+
+        </div>
+
+        <h3>Skill Proficiency (1–5)</h3>
+
+        <div id="student-skills" class="skill-grid"></div>
+
+        <div class="form-row">
+
+            <div class="field">
+                <label for="student-slots">
+                    Available Slots
+                </label>
+
+                <input
+                    id="student-slots"
+                    type="text"
+                    placeholder="0,1,2,3,5"
+                    style="width: 260px;"
+                >
+            </div>
+
+            <div class="field">
+                <label for="student-avoid">
+                    Avoid Student IDs
+                </label>
+
+                <input
+                    id="student-avoid"
+                    type="text"
+                    placeholder="e.g. 3,7"
+                    style="width: 180px;"
+                >
+            </div>
+
+        </div>
+
+        <button id="add-student">
+            Add Student
+        </button>
+
+        <span id="student-message" class="message"></span>
+    </section>
+
+
+    <!-- STEP 4 -->
+    <section>
+        <h2>4. Generate Teams</h2>
+
+        <div class="form-row">
+
+            <label>
+                <input
+                    id="use-optimizer"
+                    type="checkbox"
+                    checked
+                >
+                Apply optimization
+            </label>
+
+        </div>
+
+        <button id="generate-teams">
+            Generate Teams
+        </button>
+
+        <span id="generate-message" class="message"></span>
+
+        <div id="summary" style="display:none;">
+
+            <div class="stats">
+
+                <div class="stat">
+                    <div class="stat-label">
+                        Teams
+                    </div>
+
+                    <div
+                        id="stat-teams"
+                        class="stat-value"
+                    >
+                        -
+                    </div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-label">
+                        Average Coverage
+                    </div>
+
+                    <div
+                        id="stat-coverage"
+                        class="stat-value"
+                    >
+                        -
+                    </div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-label">
+                        Overall Score
+                    </div>
+
+                    <div
+                        id="stat-score"
+                        class="stat-value"
+                    >
+                        -
+                    </div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-label">
+                        Generation Time
+                    </div>
+
+                    <div
+                        id="stat-time"
+                        class="stat-value"
+                    >
+                        -
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- STEP 5 -->
+    <section>
+
+        <h2>Generated Teams</h2>
+
+        <div id="teams" class="teams">
+
+            <div class="empty">
+                Generate teams to see the results.
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script>
+
+const SKILLS = [
+    "frontend",
+    "backend",
+    "ml",
+    "uiux",
+    "cloud"
+];
+
+
+const $ = id => document.getElementById(id);
+
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+async function api(path, options = {}) {
+
+    const response = await fetch(path, options);
+
+    const data = await response
+        .json()
+        .catch(() => ({}));
+
+    if (!response.ok) {
+
+        throw new Error(
+            data.detail || "Request failed"
+        );
+    }
+
+    return data;
+}
+
+
+async function post(path, body) {
+
+    return api(
+        path,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(body)
+        }
+    );
+}
+
+
+function showMessage(element, message, success = true) {
+
+    element.textContent = message;
+
+    element.className =
+        success
+            ? "message success"
+            : "message error";
+}
+
+
+function createSkillInputs() {
+
+    $("requirements").innerHTML =
+        SKILLS.map(skill => `
+            <div class="field">
+                <label>${skill}</label>
+
+                <input
+                    id="req-${skill}"
+                    type="number"
+                    min="0"
+                    max="5"
+                    value="3"
+                >
+            </div>
+        `).join("");
+
+
+    $("student-skills").innerHTML =
+        SKILLS.map(skill => `
+            <div class="field">
+                <label>${skill}</label>
+
+                <input
+                    id="skill-${skill}"
+                    type="number"
+                    min="0"
+                    max="5"
+                    value="0"
+                >
+            </div>
+        `).join("");
+
+
+    $("student-role").innerHTML =
+        SKILLS.map(skill => `
+            <option value="${skill}">
+                ${skill}
+            </option>
+        `).join("");
+}
+
+
+function getRequirements() {
+
+    const requirements = {};
+
+    SKILLS.forEach(skill => {
+
+        const value =
+            Number($(`req-${skill}`).value);
+
+        if (value > 0) {
+            requirements[skill] = value;
+        }
+    });
+
+    return requirements;
+}
+
+
+function getStudentSkills() {
+
+    const skills = {};
+
+    SKILLS.forEach(skill => {
+
+        const value =
+            Number($(`skill-${skill}`).value);
+
+        if (value > 0) {
+            skills[skill] = value;
+        }
+    });
+
+    return skills;
+}
+
+
+function parseNumbers(value) {
+
+    if (!value.trim()) {
+        return [];
+    }
+
+    return value
+        .split(",")
+        .map(x => Number(x.trim()))
+        .filter(x => !Number.isNaN(x));
+}
+
+
+async function loadHackathons() {
+
+    const hackathons =
+        await api("/hackathons");
+
+    const select =
+        $("hackathon-select");
+
+    select.innerHTML =
+        `<option value="">
+            Select a hackathon
+        </option>` +
+        hackathons.map(h => `
+            <option value="${h.id}">
+                ${escapeHTML(h.name)}
+                (#${h.id})
+            </option>
+        `).join("");
+}
+
+
+async function refreshStudentCount() {
+
+    const id =
+        $("hackathon-select").value;
+
+    if (!id) {
+
+        $("student-count").value = "0";
+
+        return;
+    }
+
+    const hackathon =
+        await api(`/hackathons/${id}`);
+
+    $("student-count").value =
+        hackathon.students.length;
+}
+
+
+$("hackathon-select").addEventListener(
+    "change",
+    async () => {
+
+        try {
+
+            await refreshStudentCount();
+
+        } catch (error) {
+
+            console.error(error);
+        }
+    }
+);
+
+
+$("create-hackathon").addEventListener(
+    "click",
+    async () => {
+
+        try {
+
+            const name =
+                $("hackathon-name").value.trim();
+
+            const teamSize =
+                Number($("team-size").value);
+
+            if (!name) {
+
+                throw new Error(
+                    "Enter a hackathon name."
+                );
+            }
+
+            const hackathon =
+                await post(
+                    "/hackathons",
+                    {
+                        name: name,
+                        team_size: teamSize,
+                        requirements:
+                            getRequirements()
+                    }
+                );
+
+            showMessage(
+                $("create-message"),
+                `Hackathon #${hackathon.id} created.`
+            );
+
+            await loadHackathons();
+
+            $("hackathon-select").value =
+                hackathon.id;
+
+            await refreshStudentCount();
+
+        } catch (error) {
+
+            showMessage(
+                $("create-message"),
+                error.message,
+                false
+            );
+        }
+    }
+);
+
+
+$("add-student").addEventListener(
+    "click",
+    async () => {
+
+        try {
+
+            const hackathonId =
+                $("hackathon-select").value;
+
+            if (!hackathonId) {
+
+                throw new Error(
+                    "Select a hackathon first."
+                );
+            }
+
+            const name =
+                $("student-name").value.trim();
+
+            if (!name) {
+
+                throw new Error(
+                    "Enter the student's name."
+                );
+            }
+
+            const skills =
+                getStudentSkills();
+
+            if (
+                Object.keys(skills).length === 0
+            ) {
+
+                throw new Error(
+                    "Enter at least one skill."
+                );
+            }
+
+            await post(
+                `/hackathons/${hackathonId}/students`,
+                {
+                    name: name,
+                    skills: skills,
+                    slots:
+                        parseNumbers(
+                            $("student-slots").value
+                        ),
+                    role:
+                        $("student-role").value,
+                    avoid:
+                        parseNumbers(
+                            $("student-avoid").value
+                        )
+                }
+            );
+
+            showMessage(
+                $("student-message"),
+                "Student added."
+            );
+
+            await refreshStudentCount();
+
+            $("student-name").value = "";
+            $("student-slots").value = "";
+            $("student-avoid").value = "";
+
+            SKILLS.forEach(skill => {
+                $(`skill-${skill}`).value = 0;
+            });
+
+        } catch (error) {
+
+            showMessage(
+                $("student-message"),
+                error.message,
+                false
+            );
+        }
+    }
+);
+
+
+$("generate-teams").addEventListener(
+    "click",
+    async () => {
+
+        try {
+
+            const hackathonId =
+                $("hackathon-select").value;
+
+            if (!hackathonId) {
+
+                throw new Error(
+                    "Select a hackathon first."
+                );
+            }
+
+            const count =
+                Number(
+                    $("student-count").value
+                );
+
+            if (count === 0) {
+
+                throw new Error(
+                    "Add students before generating teams."
+                );
+            }
+
+            showMessage(
+                $("generate-message"),
+                "Generating teams..."
+            );
+
+            const result =
+                await post(
+                    "/teams/generate",
+                    {
+                        hackathon_id:
+                            Number(hackathonId),
+
+                        optimize_teams:
+                            $("use-optimizer").checked
+                    }
+                );
+
+            showMessage(
+                $("generate-message"),
+                "Teams generated successfully."
+            );
+
+            displayResults(result);
+
+        } catch (error) {
+
+            showMessage(
+                $("generate-message"),
+                error.message,
+                false
+            );
+        }
+    }
+);
+
+
+function displayResults(result) {
+
+    $("summary").style.display =
+        "block";
+
+    $("stat-teams").textContent =
+        result.team_count;
+
+    $("stat-coverage").textContent =
+        `${(
+            result.overall_coverage * 100
+        ).toFixed(1)}%`;
+
+    $("stat-score").textContent =
+        result.overall_score.toFixed(3);
+
+    $("stat-time").textContent =
+        `${result.seconds.toFixed(4)} s`;
+
+
+    $("teams").innerHTML =
+        result.teams.map(
+            (team, index) => {
+
+                const members =
+                    team.members.map(
+                        member => `
+                            <div class="member">
+
+                                <div class="member-name">
+                                    ${escapeHTML(
+                                        member.name
+                                    )}
+                                </div>
+
+                                <div class="member-role">
+                                    Role:
+                                    ${escapeHTML(
+                                        member.role
+                                    )}
+                                </div>
+
+                                <div class="skills">
+                                    ${Object.entries(
+                                        member.skills
+                                    ).map(
+                                        ([skill, level]) =>
+                                            `${escapeHTML(skill)}
+                                             ${level}/5`
+                                    ).join(" &nbsp; | &nbsp; ")}
+                                </div>
+
+                            </div>
+                        `
+                    ).join("");
+
+
+                return `
+                    <div class="team-card">
+
+                        <div class="team-header">
+                            <h3>
+                                Team ${index + 1}
+                            </h3>
+                        </div>
+
+                        <div class="team-body">
+
+                            ${members}
+
+                            <div class="metric">
+                                <span>Skill Coverage</span>
+                                <strong>
+                                    ${(
+                                        team.coverage * 100
+                                    ).toFixed(1)}%
+                                </strong>
+                            </div>
+
+                            <div class="metric">
+                                <span>Availability</span>
+                                <strong>
+                                    ${(
+                                        team.availability * 100
+                                    ).toFixed(1)}%
+                                </strong>
+                            </div>
+
+                            <div class="metric">
+                                <span>Role Diversity</span>
+                                <strong>
+                                    ${(
+                                        team.role_diversity * 100
+                                    ).toFixed(1)}%
+                                </strong>
+                            </div>
+
+                            <div class="metric">
+                                <span>Conflicts</span>
+                                <strong>
+                                    ${team.conflicts}
+                                </strong>
+                            </div>
+
+                            <div class="metric">
+                                <span>Team Score</span>
+                                <strong>
+                                    ${team.score.toFixed(3)}
+                                </strong>
+                            </div>
+
+                        </div>
+
+                    </div>
+                `;
+            }
+        ).join("");
+}
+
+
+createSkillInputs();
+
+
+loadHackathons()
+    .catch(error => {
+
+        showMessage(
+            $("create-message"),
+            error.message,
+            false
+        );
+    });
+
+</script>
+
+</body>
+</html>
