@@ -1,7 +1,8 @@
 import time
 
 from fastapi import Depends, FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
+from prometheus_client import Counter, Gauge, Histogram, generate_latest
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
@@ -22,6 +23,36 @@ from engine.scoring import (
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="TeamForge")
+
+
+# -------------------------------------------------------------------
+# Prometheus metrics
+# -------------------------------------------------------------------
+
+team_generation_requests = Counter(
+    "teamforge_team_generation_requests_total",
+    "Total number of team generation requests.",
+)
+
+team_generation_duration = Histogram(
+    "teamforge_team_generation_duration_seconds",
+    "Time spent generating teams.",
+)
+
+students_processed = Gauge(
+    "teamforge_students_processed",
+    "Number of students processed in the most recent team generation.",
+)
+
+teams_generated = Gauge(
+    "teamforge_teams_generated",
+    "Number of teams generated in the most recent team generation.",
+)
+
+team_coverage = Gauge(
+    "teamforge_team_coverage",
+    "Average skill coverage of the most recently generated teams.",
+)
 
 
 class HackathonCreate(BaseModel):
@@ -51,6 +82,14 @@ def home():
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+@app.get("/metrics")
+def metrics():
+    return Response(
+        generate_latest(),
+        media_type="text/plain; version=0.0.4; charset=utf-8",
+    )
 
 
 @app.post("/hackathons")
@@ -184,6 +223,9 @@ def generate_teams(
     payload: GenerateRequest,
     db: Session = Depends(get_db),
 ):
+    # Count every team-generation request.
+    team_generation_requests.inc()
+
     hackathon = (
         db.query(Hackathon)
         .filter(Hackathon.id == payload.hackathon_id)
@@ -209,6 +251,9 @@ def generate_teams(
             status_code=400,
             detail="No students registered",
         )
+
+    # Record the number of students processed.
+    students_processed.set(len(rows))
 
     students = [
         Student(
@@ -239,14 +284,15 @@ def generate_teams(
 
     seconds = time.perf_counter() - start
 
+    # Record generation duration.
+    team_generation_duration.observe(seconds)
+
     team_results = []
 
     for team in teams:
-        coverage = (
-            avg_coverage(
-                [team],
-                hackathon.requirements,
-            )
+        coverage = avg_coverage(
+            [team],
+            hackathon.requirements,
         )
 
         team_results.append(
@@ -284,6 +330,10 @@ def generate_teams(
         team["score"]
         for team in team_results
     )
+
+    # Record the latest generation results.
+    teams_generated.set(len(team_results))
+    team_coverage.set(overall_coverage)
 
     result = {
         "hackathon_id": hackathon.id,
