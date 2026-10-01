@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:16
+    container_name: teamforge-db
+    environment:
+      POSTGRES_DB: teamforge
+      POSTGRES_USER: teamforge
+      POSTGRES_PASSWORD: teamforge
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U teamforge -d teamforge"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: .
+    container_name: teamforge-api
+    environment:
+      DATABASE_URL: postgresql+psycopg2://teamforge:teamforge@db:5432/teamforge
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
