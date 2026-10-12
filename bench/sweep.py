@@ -1,3 +1,4 @@
+
 import time
 
 from engine.synthetic import generate
@@ -7,6 +8,8 @@ from engine.scoring import total_score
 
 
 REQ = {
+    "python": 4,
+    "java": 4,
     "frontend": 4,
     "backend": 5,
     "ml": 3,
@@ -15,6 +18,7 @@ REQ = {
 }
 
 TEAM_SIZE = 5
+STUDENT_COUNTS = [50, 100, 300, 1000]
 
 
 def run(n):
@@ -60,16 +64,17 @@ def main():
     print(
         "students | teams | greedy | optimized | seconds"
     )
+    print("-" * 57)
 
-    for n in [50, 100, 300, 1000]:
+    for n in STUDENT_COUNTS:
         result = run(n)
 
         print(
             f"{result[0]:8d} | "
             f"{result[1]:5d} | "
-            f"{result[2]:.3f} | "
-            f"{result[3]:.3f} | "
-            f"{result[4]:.4f}"
+            f"{result[2]:7.3f} | "
+            f"{result[3]:9.3f} | "
+            f"{result[4]:7.4f}"
         )
 
 
