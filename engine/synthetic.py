@@ -1,9 +1,19 @@
+
 import random
 
 from engine.models import Student
 
 
-SKILLS = ["frontend", "backend", "ml", "uiux", "cloud"]
+SKILLS = [
+    "python",
+    "java",
+    "frontend",
+    "backend",
+    "ml",
+    "uiux",
+    "cloud",
+]
+
 NUM_SLOTS = 14
 
 

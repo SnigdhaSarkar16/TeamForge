@@ -1,5 +1,15 @@
-from sqlalchemy import Column, Float, ForeignKey, Integer, String, JSON
+
+from sqlalchemy import (
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    JSON,
+)
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 
 from app.db import Base
 
@@ -40,6 +50,12 @@ class StudentRow(Base):
         back_populates="students",
     )
 
+    assessments = relationship(
+        "SkillAssessment",
+        back_populates="student",
+        cascade="all, delete-orphan",
+    )
+
 
 class TeamRun(Base):
     __tablename__ = "team_runs"
@@ -54,3 +70,33 @@ class TeamRun(Base):
     coverage = Column(Float, nullable=False)
     seconds = Column(Float, nullable=False)
     result = Column(JSON, nullable=False)
+
+
+class SkillAssessment(Base):
+    __tablename__ = "skill_assessments"
+
+    id = Column(Integer, primary_key=True)
+    student_id = Column(
+        Integer,
+        ForeignKey("students.id"),
+        nullable=False,
+    )
+
+    skill = Column(String, nullable=False)
+    correct_answers = Column(Integer, nullable=False)
+    total_questions = Column(Integer, nullable=False)
+    percentage = Column(Float, nullable=False)
+    proficiency_level = Column(Integer, nullable=False)
+    proficiency_label = Column(String, nullable=False)
+    answers = Column(JSON, nullable=False)
+
+    created_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False,
+    )
+
+    student = relationship(
+        "StudentRow",
+        back_populates="assessments",
+    )
